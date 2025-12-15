@@ -7,8 +7,12 @@ from datetime import datetime
 from pandas.tseries.offsets import BDay
 
 # 1. Setup Supabase
-url = "https://xxcmveyasqyhurgedjbz.supabase.co"
-key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4Y212ZXlhc3F5aHVyZ2VkamJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MTE3MjksImV4cCI6MjA4MTM4NzcyOX0.KdnPt0fHZwz0izU3h3_MB83UqYtC7LTVBvNwvQvKl1Q" 
+url = os.environ.get("SUPABASE_URL") 
+key = os.environ.get("SUPABASE_KEY")
+
+if not url or not key:
+    raise ValueError("Supabase keys are missing! Check GitHub Secrets.")
+
 supabase = create_client(url, key)
 
 def update_database():

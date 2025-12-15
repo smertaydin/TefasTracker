@@ -1,0 +1,42 @@
+name: TEFAS Daily Update
+
+on:
+  schedule:
+    # GitHub Actions uses UTC time. Turkey is UTC+3.
+    # 7:00 AM TRT  = 04:00 UTC
+    # 10:30 AM TRT = 07:30 UTC
+    
+    # Schedule 1: 04:00 UTC to 06:45 UTC (Every 15 mins)
+    # Covers 07:00 AM to 09:45 AM TRT
+    - cron: '*/15 4-6 * * 1-5'
+    
+    # Schedule 2: 07:00 UTC to 07:30 UTC (Every 15 mins)
+    # Covers 10:00 AM to 10:30 AM TRT
+    - cron: '0,15,30 7 * * 1-5'
+
+  # Allows you to run this manually from the Actions tab for testing
+  workflow_dispatch:
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy tefas-crawler supabase
+
+      - name: Run Update Script
+        env:
+          # This injects the secrets from Step 2 into the script
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python update_funds.py
